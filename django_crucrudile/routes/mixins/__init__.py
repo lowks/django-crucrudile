@@ -1,4 +1,4 @@
-"""
+u"""
 This module contains route mixins, that implement specific functionality for abstract class :func:`django_crucrudile.routes.base.BaseRoute` subclasses. Some of these mixins make the class "concrete" (as the abstract function :func:`django_crucrudile.routes.base.BaseRoute.get_callback` is implemented, the class can be instantiated).
 """
 
@@ -9,6 +9,6 @@ from .model import ModelMixin
 
 
 __all__ = [
-    "ArgumentsMixin", "CallbackMixin",
-    "ViewMixin", "ModelMixin"
+    u"ArgumentsMixin", u"CallbackMixin",
+    u"ViewMixin", u"ModelMixin"
 ]

@@ -1,4 +1,4 @@
-"""This module contains some utility modules for handling URL
+u"""This module contains some utility modules for handling URL
 building, and the aspect of handling several parts of the URL, each
 separated by different separators, that may be provided or not (thus,
 handling separators becomes a bit more complicated).
@@ -8,10 +8,11 @@ handling separators becomes a bit more complicated).
 from copy import copy
 from itertools import chain
 from functools import partial, wraps
+from itertools import imap
 
 
 def pass_tuple(count=1):
-    """Returns a decorator that wraps a function to make it run witout the
+    u"""Returns a decorator that wraps a function to make it run witout the
     first part of a tuple in its original arguments and return the omitted
     arguments contatenated with its original return value.
 
@@ -44,14 +45,14 @@ def pass_tuple(count=1):
     """
 
     def decorator(func):
-        """Wrap a function to make it run witout the first part of a tuple in
+        u"""Wrap a function to make it run witout the first part of a tuple in
         its original arguments and return the omitted items
         concatenated with its original return value.
 
         """
         @wraps(func)
         def decorated(args_tuple, *args, **kwargs):
-            """Return concatenation of omitted items (``args_tuple[:count]``) and
+            u"""Return concatenation of omitted items (``args_tuple[:count]``) and
             result of original function called without omitted items
             (``args_tuple[count:]``).
 
@@ -68,7 +69,7 @@ def pass_tuple(count=1):
 
 
 def compose(functions, *args, **kwargs):
-    """Compose functions together
+    u"""Compose functions together
 
     :argument functions: Functions to compose
     :type functions: list of callables
@@ -90,13 +91,13 @@ def compose(functions, *args, **kwargs):
     if kwargs is None:  # pragma: no cover
         kwargs = {}
 
-    funcs = map(
+    funcs = imap(
         partial(partial, *args, **kwargs),
         functions
     )
 
     def composed(x):
-        """Composed function"""
+        u"""Composed function"""
         for func in funcs:
             x = func(x)
         return x
@@ -104,8 +105,8 @@ def compose(functions, *args, **kwargs):
     return composed
 
 
-class Separated:
-    """Accepts separator options in :func:`__init__`, and provide
+class Separated(object):
+    u"""Accepts separator options in :func:`__init__`, and provide
     :func:`get_separator`, that returns the corresponding separator
     for required and optional parts, based on the separator passed to
     :func:`__init__` (or set at class-level).
@@ -113,18 +114,18 @@ class Separated:
     .. inheritance-diagram:: Separated
 
     """
-    separator = "/"
-    """
+    separator = u"/"
+    u"""
     :attribute separator: Separator to use in front of a required item
     :type separator: str
     """
-    opt_separator = "/?"
-    """
+    opt_separator = u"/?"
+    u"""
     :attribute opt_separator: Separator to use in front of an optional item
     :type opt_separator: str
     """
     required_default = True
-    """
+    u"""
     :attribute required_default: If True, items required by default
                                 (when None)
     :type required_default: bool
@@ -132,11 +133,14 @@ class Separated:
 
     def __init__(self,
                  *args,
-                 separator=None,
-                 opt_separator=None,
-                 required_default=None,
                  **kwargs):
-        """Initialize, set separator options
+        if 'required_default' in kwargs: required_default = kwargs['required_default']; del kwargs['required_default']
+        else: required_default = None
+        if 'opt_separator' in kwargs: opt_separator = kwargs['opt_separator']; del kwargs['opt_separator']
+        else: opt_separator = None
+        if 'separator' in kwargs: separator = kwargs['separator']; del kwargs['separator']
+        else: separator = None
+        u"""Initialize, set separator options
 
         :argument separator: See :attr:`separator`
         :argument opt_separator: See :attr:`opt_separator`
@@ -151,10 +155,10 @@ class Separated:
         if required_default:  # pragma: no cover
             self.required_default = required_default
 
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def get_separator(self, required=None):
-        """Get the argument separator to use according to the :attr:`required`
+        u"""Get the argument separator to use according to the :attr:`required`
         argument
 
         :argument required: If False, will return the optional
@@ -182,8 +186,8 @@ class Separated:
             return self.opt_separator
 
 
-class Parsable:
-    """Class whose instances may be called, to return a "parsed" version,
+class Parsable(object):
+    u"""Class whose instances may be called, to return a "parsed" version,
     obtained by passing the original version in the parsers returned
     by :func:`get_parsers`.
 
@@ -238,7 +242,7 @@ class Parsable:
 
     """
     def get_parsers(self):
-        """Return parsers list. Base implementation returns an empty list. To
+        u"""Return parsers list. Base implementation returns an empty list. To
         add new parsers, override this function and append/prepend the
         functions to use as parsers.
 
@@ -249,7 +253,7 @@ class Parsable:
         return []
 
     def __call__(self):
-        """Compose the parsers in :func:`get_parsers` using :func:`compose`,
+        u"""Compose the parsers in :func:`get_parsers` using :func:`compose`,
         and use the composed function to get the parsed version from the
         original version.
 
@@ -274,7 +278,7 @@ class Parsable:
 
 
 class OptionalPartList(Separated, Parsable, list):
-    """Implement Separated and Parsable into a list, to make a separated,
+    u"""Implement Separated and Parsable into a list, to make a separated,
     parsable URL part list, that handles optional parts and that uses
     registered parsers (from :func:`get_parsers`) when the instance is
     called.
@@ -304,7 +308,7 @@ class OptionalPartList(Separated, Parsable, list):
 
     """
     def __add__(self, other):
-        """Concatenate with other iterable, creating a new object..
+        u"""Concatenate with other iterable, creating a new object..
 
         We override :func:`list.__add__` to return a new
         :class:`OptionalPartList` instance, instead of a list
@@ -343,7 +347,7 @@ class OptionalPartList(Separated, Parsable, list):
 
     def __init__(self, iterable=None,
                  separator=None, opt_separator=None, required_default=None):
-        """Initialize, use empty list as iterable if None provided.
+        u"""Initialize, use empty list as iterable if None provided.
 
         :argument iterable: Raw URL part list
         :type iterable: iterable
@@ -357,7 +361,7 @@ class OptionalPartList(Separated, Parsable, list):
         if iterable is None:
             iterable = []
 
-        super().__init__(
+        super(self.__class__, self).__init__(
             iterable,
             separator=separator,
             opt_separator=opt_separator,
@@ -365,14 +369,14 @@ class OptionalPartList(Separated, Parsable, list):
         )
 
     def get_parsers(self):
-        """Complement :class:`OptionalPartList` parsers (from
+        u"""Complement :class:`OptionalPartList` parsers (from
         :func:`OptionalPartList.get_parsers`) with
         :func:`transform_to_tuple` and :func:`apply_required_default`.
 
         :returns: List of parser functions
         :rtype: list
         """
-        return super().get_parsers() + [
+        return super(self.__class__, self).get_parsers() + [
             self.transform_to_tuple,
             partial(
                 self.apply_required_default,
@@ -383,7 +387,7 @@ class OptionalPartList(Separated, Parsable, list):
 
     @staticmethod
     def transform_to_tuple(items):
-        """Transform each item to a tuple if it's not one
+        u"""Transform each item to a tuple if it's not one
 
         :argument items: List of items and tuples
         :type items: iterable
@@ -407,7 +411,7 @@ class OptionalPartList(Separated, Parsable, list):
 
     @staticmethod
     def apply_required_default(items, default):
-        """Apply default value to first element of item if it's None.
+        u"""Apply default value to first element of item if it's None.
 
         :argument items: List of tuples
         :type items: iterable
@@ -436,7 +440,7 @@ class OptionalPartList(Separated, Parsable, list):
 
 
 class URLBuilder(OptionalPartList):
-    """Allows building URLs from a list of URL parts. The parts can be
+    u"""Allows building URLs from a list of URL parts. The parts can be
     required or optional, this information will be used to determine
     which separator to use.
 
@@ -490,7 +494,7 @@ class URLBuilder(OptionalPartList):
 
     """
     def get_parsers(self):
-        """Complement :class:`OptionalPartList` parsers (from
+        u"""Complement :class:`OptionalPartList` parsers (from
         :func:`OptionalPartList.get_parsers`) with :func:`filter_empty_items`,
         :func:`add_first_item_required_flag`, :func:`flatten` and
         :func:`join`.
@@ -498,7 +502,7 @@ class URLBuilder(OptionalPartList):
         :returns: List of parser functions
         :rtype: list
         """
-        return super().get_parsers() + [
+        return super(self.__class__, self).get_parsers() + [
             self.filter_empty_items,
             partial(
                 self.add_first_item_required_flag,
@@ -512,7 +516,7 @@ class URLBuilder(OptionalPartList):
 
     @staticmethod
     def filter_empty_items(items):
-        """
+        u"""
         Filter out items that give False when casted to boolean.
 
         :argument items: List of tuples
@@ -545,7 +549,7 @@ class URLBuilder(OptionalPartList):
 
     @staticmethod
     def add_first_item_required_flag(items):
-        """Return a boolean indicating whether the first item is required,
+        u"""Return a boolean indicating whether the first item is required,
         and the list of items.
 
         :argument items: List of tuples
@@ -578,7 +582,7 @@ class URLBuilder(OptionalPartList):
         """
         items = iter(items)
         try:
-            required, item = next(items)
+            required, item = items.next()
         except StopIteration:
             return False, items
         else:
@@ -590,7 +594,7 @@ class URLBuilder(OptionalPartList):
     @staticmethod
     @pass_tuple(1)
     def flatten(items, get_separator):
-        """Flatten items, adding the separator where required.
+        u"""Flatten items, adding the separator where required.
 
         :argument items: List of tuples
         :type items: iterable
@@ -632,7 +636,7 @@ class URLBuilder(OptionalPartList):
 
         """
         items = iter(items)
-        required, item = next(items)
+        required, item = items.next()
         if item:
             yield item
         for required, item in items:
@@ -643,7 +647,7 @@ class URLBuilder(OptionalPartList):
     @staticmethod
     @pass_tuple(1)
     def join(items):
-        """
+        u"""
         Concatenate items into a string
 
         :argument items: List of URL parts, with separators
@@ -674,4 +678,4 @@ class URLBuilder(OptionalPartList):
 
 
         """
-        return ''.join(items)
+        return u''.join(items)

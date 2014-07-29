@@ -1,4 +1,4 @@
-"""A router is an implementation of the abstract class Entity, that
+u"""A router is an implementation of the abstract class Entity, that
 uses an entity store to allow routing other entities. In the code,
 this is represented by subclassing
 :class:`django_crucrudile.entities.store.EntityStore` and
@@ -41,14 +41,14 @@ from django_crucrudile.entities.store import EntityStore
 
 
 __all__ = [
-    "Router",
-    "ModelRouter",
-    "GenericModelRouter"
+    u"Router",
+    u"ModelRouter",
+    u"GenericModelRouter"
 ]
 
 
 class Router(EntityStore, Entity):
-    """RoutedEntity that yields an URL group containing URL patterns from
+    u"""RoutedEntity that yields an URL group containing URL patterns from
     the entities in the entity store
     (:class:`django_crucrudile.entities.store.EntityStore`). The URL
     group can be set have an URL part and na namespace.
@@ -62,19 +62,19 @@ class Router(EntityStore, Entity):
 
     """
     namespace = None
-    """
+    u"""
     :attribute namespace: If defined, group this router's patterns in
                           an URL namespace
     :type namespace: str
     """
     url_part = None
-    """
+    u"""
     :attribute url_part: If defined, add to router URL (use when as
                          regex when building URL group)
     :type url_part: str
     """
     redirect = None
-    """
+    u"""
     :attribute redirect: If defined, :class:`Router` will add a
                          redirect view to the returned patterns. To
                          get the redirect target,
@@ -89,7 +89,7 @@ class Router(EntityStore, Entity):
     :type redirect: :class:`django_crucrudile.entities.Entity`
     """
     add_redirect = None
-    """
+    u"""
     :attribute add_redirect: Add redirect pattern when calling
                              :func:`patterns`. If None (default), will
                              be guessed using :attr:`redirect` (Add
@@ -97,7 +97,7 @@ class Router(EntityStore, Entity):
     :type add_redirect: bool
     """
     add_redirect_silent = False
-    """
+    u"""
     :attribute add_redirect_silent: Fail silently when the patterns
                                     reader is asked to add the
                                     redirect patterns and the redirect
@@ -114,7 +114,7 @@ class Router(EntityStore, Entity):
     :type add_redirect_silent: bool
     """
     get_redirect_silent = False
-    """
+    u"""
     :attribute get_redirect_silent: Fail silently when following
                                     redirect attributes to find the
                                     redirect URL name (if no URL name
@@ -122,13 +122,13 @@ class Router(EntityStore, Entity):
     :type get_redirect_silent: bool
     """
     redirect_max_depth = 100
-    """
+    u"""
     :attribute redirect_max_depth: Max depth when following redirect
                                    attributes
     :type redirect_max_depth: int
     """
     generic = False
-    """
+    u"""
     :attribute generic: If True, :func:`get_register_map` will return
                         a :class:`model.generic.GenericModelRouter`
                         (with preconfigured Django videws) for the
@@ -144,7 +144,7 @@ class Router(EntityStore, Entity):
                  get_redirect_silent=None,
                  generic=None,
                  **kwargs):  # pragma: no cover
-        """Initialize Router base attributes from given arguments
+        u"""Initialize Router base attributes from given arguments
 
         :argument namespace: Optional. See :attr:`namespace`
         :argument url_part: Optional. See :attr:`url_part`
@@ -174,10 +174,10 @@ class Router(EntityStore, Entity):
             self.generic = generic
 
         # call superclass implementation of __init__
-        super().__init__(**kwargs)
+        super(self.__class__, self).__init__(**kwargs)
 
     def get_register_map(self):
-        """Add two base register mappings (to the mappings returned by the
+        u"""Add two base register mappings (to the mappings returned by the
 super implementation)
 
         - :class:`django.db.models.Model` subclasses are passed to a
@@ -204,7 +204,7 @@ super implementation)
            overrides.
 
         """
-        mapping = super().get_register_map()
+        mapping = super(self.__class__, self).get_register_map()
         mapping[Model] = (
             ModelRouter if not self.generic else GenericModelRouter
         )
@@ -213,7 +213,7 @@ super implementation)
         return mapping
 
     def register(self, entity, index=False, map_kwargs=None):
-        """Register routed entity, using
+        u"""Register routed entity, using
         :func:`django_crucrudile.entities.store.EntityStore.register`
 
         Set as index when ``index`` or ``entity.index`` is True.
@@ -255,7 +255,7 @@ super implementation)
         True
 
         """
-        entity = super().register(
+        entity = super(self.__class__, self).register(
             entity,
             map_kwargs=map_kwargs
         )
@@ -266,7 +266,7 @@ super implementation)
 
     def get_redirect_pattern(self, namespaces=None, silent=None,
                              redirect_max_depth=None):
-        """Compile the URL name to this router's redirect path (found by
+        u"""Compile the URL name to this router's redirect path (found by
         following :attr:`Router.redirect`), and that return a lazy
         :class:`django.views.generic.RedirectView` that redirects to
         this URL name
@@ -375,9 +375,9 @@ super implementation)
         _last_redirect_found = None
 
         redirect = self.redirect
-        for i in range(redirect_max_depth):
+        for i in xrange(redirect_max_depth):
             # loop through redirect attributes
-            if isinstance(redirect, str):
+            if isinstance(redirect, unicode):
                 break
             elif redirect is None:
                 break
@@ -405,16 +405,16 @@ super implementation)
                 redirect = redirect.redirect
         else:
             raise OverflowError(
-                "Depth-first search reached its maximum ({}) depth"
-                ", without returning a leaf item (string)."
-                "Maybe the redirect graph has a cycle ?"
-                "".format(redirect_max_depth)
+                u"Depth-first search reached its maximum ({}) depth"
+                u", without returning a leaf item (string)."
+                u"Maybe the redirect graph has a cycle ?"
+                u"".format(redirect_max_depth)
             )
         if redirect:
             # get the target URL name (by prefixing the redirect URL
             # name with the namespaces)
-            target_url_name = ':'.join([
-                ':'.join(namespaces),
+            target_url_name = u':'.join([
+                u':'.join(namespaces),
                 redirect,
             ]) if namespaces else redirect
 
@@ -422,7 +422,7 @@ super implementation)
             # This is not required as these patterns should not be
             # pointed to directly, but it helps when debugging
             # (use a random ID to avoid collisions)
-            redirect_url_name = "{}-redirect".format(
+            redirect_url_name = u"{}-redirect".format(
                 redirect,
             )
 
@@ -436,7 +436,7 @@ super implementation)
             # Now that we have a redirect view pointing to the target
             # pattern, and a name for our pattern, we can create it
             url_pattern = url(
-                r'^$',
+                ur'^$',
                 redirect_view,
                 name=redirect_url_name
             )
@@ -453,19 +453,19 @@ super implementation)
             # This will happen if self.redirect is None or if
             # following redirect attributes returned None somewhere
             raise ValueError(
-                "Failed following redirect attribute ({}) "
-                "(last redirect found : {}, redirect value: {})) in {}"
-                "".format(
+                u"Failed following redirect attribute ({}) "
+                u"(last redirect found : {}, redirect value: {})) in {}"
+                u"".format(
                     self.redirect,
                     _last_redirect_found,
-                    getattr(_last_redirect_found, 'redirect', 'not defined'),
+                    getattr(_last_redirect_found, u'redirect', u'not defined'),
                     self.__class__.__name__
                 )
             )
 
     def patterns(self, namespaces=None,
                  add_redirect=None, add_redirect_silent=None):
-        """Read :attr:`_store` and yield a pattern of an URL group (with url part
+        u"""Read :attr:`_store` and yield a pattern of an URL group (with url part
         and namespace) containing entities's patterns (obtained from
         the entity store), also yield redirect patterns where defined.
 
@@ -568,9 +568,9 @@ super implementation)
                 else:
                     if add_redirect_silent is False:
                         raise ValueError(
-                            "No redirect attribute set "
-                            "(and ``add_redirect_silent`` is ``False``)."
-                            "".format(self)
+                            u"No redirect attribute set "
+                            u"(and ``add_redirect_silent`` is ``False``)."
+                            u"".format(self)
                         )
 
             for entity in self._store:
@@ -587,7 +587,7 @@ super implementation)
 
         # make a RegexURLResolver
         pattern = url(
-            '^{}/'.format(url_part) if url_part else '^',
+            u'^{}/'.format(url_part) if url_part else u'^',
             include(
                 pattern_list,
                 namespace=namespace,

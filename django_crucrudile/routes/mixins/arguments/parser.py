@@ -1,4 +1,4 @@
-"""This module contains the default arguments parser
+u"""This module contains the default arguments parser
 (:class:`ArgumentsParser`), used in
 :class:`django_crucrudile.routes.mixins.arguments.ArgumentsMixin`.
 
@@ -8,14 +8,16 @@ The :func:`combine` function is used by the cartesian product in
 separator.
 
 """
-from functools import partial, reduce
+from functools import partial
 from itertools import product
 
 from django_crucrudile.urlutils import OptionalPartList
+from itertools import ifilter
+from itertools import imap
 
 
 def combine(iterable, separator):
-    """Join ``iterable`` (filtering out its items that evaluate to
+    u"""Join ``iterable`` (filtering out its items that evaluate to
     ``Ǹone``) using ``separator``
 
     :argument iterable: Iterable to filter and join
@@ -31,11 +33,11 @@ def combine(iterable, separator):
     'Foo/Bar/Xyz'
 
     """
-    return separator.join(filter(None, iterable))
+    return separator.join(ifilter(None, iterable))
 
 
 class ArgumentsParser(OptionalPartList):
-    """This parser reads a list of argument specification, and builds an
+    u"""This parser reads a list of argument specification, and builds an
     argument combination list (using a cartesian product). It subclasses
     :class:`django_crucrudile.urlutils.OptionalPartList` (as an arguments
     list is an URL part list), and add its building parsers in
@@ -105,7 +107,7 @@ class ArgumentsParser(OptionalPartList):
 
     """
     def get_parsers(self):
-        """Add :func:`transform_args_to_list`, :func:`cartesian_product` and
+        u"""Add :func:`transform_args_to_list`, :func:`cartesian_product` and
         :func:`consume_cartesian_product` to the parsers from
         :func:`django_crucrudile.urlutils.OptionalPartList.get_parsers`.
 
@@ -113,7 +115,7 @@ class ArgumentsParser(OptionalPartList):
         :rtype: list of callable
 
         """
-        return super().get_parsers() + [
+        return super(self.__class__, self).get_parsers() + [
             # iterable(tuple (bool, str or list (str))) ->
             # iterable(tuple (bool, list(str))) ->
             self.transform_args_to_list,
@@ -125,7 +127,7 @@ class ArgumentsParser(OptionalPartList):
 
     @staticmethod
     def transform_args_to_list(items):
-        """Transform second part of each item in items in a list if it's not
+        u"""Transform second part of each item in items in a list if it's not
         one.
 
         :argument items: List of items to transform
@@ -150,7 +152,7 @@ class ArgumentsParser(OptionalPartList):
 
     @staticmethod
     def cartesian_product(items, get_separator):
-        """Process cartesian product to get all possible combinations with
+        u"""Process cartesian product to get all possible combinations with
         argument lists in ``items``.
 
         :argument items: List of tuple to transform (2-tuple with a
@@ -207,7 +209,7 @@ class ArgumentsParser(OptionalPartList):
             separator = get_separator(required)
             _combine = partial(combine, separator=separator)
 
-            combs = map(
+            combs = imap(
                 _combine,
                 product(combs, args)
             )
@@ -218,7 +220,7 @@ class ArgumentsParser(OptionalPartList):
 
     @staticmethod
     def consume_cartesian_product(items):
-        """Force the generated to be consumed
+        u"""Force the generated to be consumed
 
         :argument items: Generator to consume
         :type items: iterable

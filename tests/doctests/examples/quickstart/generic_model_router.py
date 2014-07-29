@@ -1,4 +1,4 @@
-"""
+u"""
 >>> # these two lines are required to subclass Django model in doctests
 >>> import tests.unit
 >>> __name__ = "tests.doctests"

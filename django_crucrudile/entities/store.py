@@ -1,4 +1,4 @@
-"""The entity store class provides functions to register entity
+u"""The entity store class provides functions to register entity
 instances in an entity store.
 
 It also allow entity classes to be registered at class-level in a
@@ -35,11 +35,11 @@ mean.
 from collections import OrderedDict
 from abc import ABCMeta
 
-__all__ = ['provides', 'EntityStoreMetaclass', 'EntityStore']
+__all__ = [u'provides', u'EntityStoreMetaclass', u'EntityStore']
 
 
 def provides(provided, **kwargs):
-    """Return a decorator that uses :func:`EntityStore.register_class` to
+    u"""Return a decorator that uses :func:`EntityStore.register_class` to
     register the given object in the base store.
 
     :argument provided: Class (or object) to register in the base store. This
@@ -50,7 +50,7 @@ def provides(provided, **kwargs):
     """
 
     def register_obj_in_store(router):
-        """Register the provided class to :argument:`store`
+        u"""Register the provided class to :argument:`store`
 
         :argument route: Router to register provided object to
         :type router: :class:`EntityStore`"""
@@ -60,7 +60,7 @@ def provides(provided, **kwargs):
 
 
 class EntityStoreMetaclass(ABCMeta):
-    """EntityStoreMetaclass allows :class:`EntityStore` to use a different
+    u"""EntityStoreMetaclass allows :class:`EntityStore` to use a different
     :attr:`_base_store` store (list instance) for each class definitions
     (``cls`` instantiation)
 
@@ -102,7 +102,7 @@ class EntityStoreMetaclass(ABCMeta):
     _base_store = []
     _base_register_map = OrderedDict()
     _base_register_class_map = OrderedDict()
-    """
+    u"""
     :attribute _base_store: Routed entity class store, instantiated
                                upon Router instantiation.
     :type _base_store: list
@@ -124,7 +124,7 @@ class EntityStoreMetaclass(ABCMeta):
     :type _base_store: dict
     """
     def __init__(cls, name, bases, attrs):
-        """Replace :attr:`_base_store`, :attr:`_base_register_map` and
+        u"""Replace :attr:`_base_store`, :attr:`_base_register_map` and
         :attr:`_base_register_class_map` by copies of themselves
 
         :argument name: New class name
@@ -140,14 +140,15 @@ class EntityStoreMetaclass(ABCMeta):
            :class:`django_crucrudile.entities.store.EntityStoreMetaclass`
 
         """
-        super().__init__(name, bases, attrs)
+        super(cls.__class__, cls).__init__(name, bases, attrs)
         cls._base_register_map = cls._base_register_map.copy()
         cls._base_register_class_map = cls._base_register_class_map.copy()
         cls._base_store = cls._base_store.copy()
 
 
-class EntityStore(metaclass=EntityStoreMetaclass):
-    """Provides an entity store, and a :func:`register` method that
+class EntityStore():
+    __metaclass__ = EntityStoreMetaclass
+    u"""Provides an entity store, and a :func:`register` method that
     registers entities in the entity store.
 
     The subclass implementation of :func:`patterns` should iterate over
@@ -156,17 +157,17 @@ class EntityStore(metaclass=EntityStoreMetaclass):
     .. inheritance-diagram:: EntityStore
     """
     def __init__(self):
-        """Initialize router (create empty store and register base
+        u"""Initialize router (create empty store and register base
         store)
         """
-        super().__init__()
+        super(self.__class__, self).__init__()
         self._store = []
         self.register_base_store()
 
     @staticmethod
     def register_apply_map(entity, mapping,
                            transform_kwargs=None, silent=True):
-        """Apply mapping of value in ``mapping`` if ``entity`` is
+        u"""Apply mapping of value in ``mapping`` if ``entity`` is
         subclass (:func:`issubclass`) or instance (:func:`isinstance`) of key
 
         :argument entity: Object to pass to found mappings
@@ -306,7 +307,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
             transform_kwargs = {}
 
         def _match_entity(base, test):
-            """Match the current entity against a given base,
+            u"""Match the current entity against a given base,
             with a given test
 
             """
@@ -321,14 +322,14 @@ class EntityStore(metaclass=EntityStoreMetaclass):
                 return test(entity, base)
 
         def _make_entity(func):
-            """Make the new entity using the given function"""
+            u"""Make the new entity using the given function"""
             return func(
                 entity,
                 **transform_kwargs
             )
 
         def _find_entity(test):
-            """Find an entity matching the given test in register_map keys, then,
+            u"""Find an entity matching the given test in register_map keys, then,
             with the matching value, return :func:`_make_entity(value)`.
 
             If no key matches, return original entity or fail with a
@@ -347,16 +348,16 @@ class EntityStore(metaclass=EntityStoreMetaclass):
                     def _get_base_names():
                         for base, key in mapping.items():
                             if isinstance(base, tuple):
-                                yield ', '.join(b.__name__ for b in base)
+                                yield u', '.join(b.__name__ for b in base)
                             else:
                                 yield base.__name__
 
                     raise LookupError(
-                        "Could not find matching key in register mapping. "
-                        "Used test '{}', register mapping bases are '{}', "
-                        "tested against '{}'".format(
+                        u"Could not find matching key in register mapping. "
+                        u"Used test '{}', register mapping bases are '{}', "
+                        u"tested against '{}'".format(
                             test.__name__,
-                            ', '.join(_get_base_names()),
+                            u', '.join(_get_base_names()),
                             type(entity).__name__
                             if not isinstance(entity, type) else
                             entity.__name__
@@ -371,7 +372,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
 
     @classmethod
     def get_register_class_map(self):
-        """Mapping of type to function that will be evaluated (with entity)
+        u"""Mapping of type to function that will be evaluated (with entity)
         when calling register. See :func:`register_class` and
         :func:`register_apply_map`.
 
@@ -398,7 +399,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
 
     @classmethod
     def get_register_class_map_kwargs(cls):
-        """Arguments passed when applying register map, in
+        u"""Arguments passed when applying register map, in
         :func:`register_class`
 
         .. seealso::
@@ -410,7 +411,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
         return {}
 
     def get_register_map(self):
-        """Mapping of type to function that will be evaluated (with entity)
+        u"""Mapping of type to function that will be evaluated (with entity)
         when calling register. See :func:`register` and
         :func:`register_apply_map`
 
@@ -436,7 +437,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
         return OrderedDict(self._base_register_map)
 
     def get_register_map_kwargs(self):
-        """Arguments passed when applying register map, in :func:`register`
+        u"""Arguments passed when applying register map, in :func:`register`
 
         .. seealso::
 
@@ -448,7 +449,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
 
     @classmethod
     def set_register_class_mapping(self, key, value):
-        """Set a base register class mapping, that will be returned (possibly
+        u"""Set a base register class mapping, that will be returned (possibly
         with other mappings) by :func:`get_register_class_map`.
 
         :argument key: Register class mapping bases
@@ -477,7 +478,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
 
     @classmethod
     def set_register_mapping(self, key, value):
-        """Set a base register mapping, that will be returned (possibly
+        u"""Set a base register mapping, that will be returned (possibly
         with other mappings) by :func:`get_register_map`.
 
         :argument key: Register mapping bases
@@ -506,7 +507,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
 
     @classmethod
     def register_class(cls, register_cls, map_kwargs=None):
-        """Add a route class to :attr:`_base_store`, appling mapping from
+        u"""Add a route class to :attr:`_base_store`, appling mapping from
         :func:`get_register_class_map` where required. This route class will
         be instantiated (with kwargs from :func:`get_base_store_kwargs`)
         when the Router is itself instiated, using
@@ -567,7 +568,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
         return register_cls
 
     def register(self, entity, map_kwargs=None):
-        """Register routed entity, applying mapping from
+        u"""Register routed entity, applying mapping from
         :func:`get_register_map` where required
 
         :argument entity: Entity to register
@@ -618,7 +619,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
         return entity
 
     def get_base_store_kwargs(self):
-        """Arguments passed when instantiating entity classes in
+        u"""Arguments passed when instantiating entity classes in
         :attr:`_base_store`
 
         :returns: Keyword arguments
@@ -641,7 +642,7 @@ class EntityStore(metaclass=EntityStoreMetaclass):
         return {}
 
     def register_base_store(self):
-        """Instantiate entity classes in _base_store, using arguments from
+        u"""Instantiate entity classes in _base_store, using arguments from
         :func:`get_base_store_kwargs`
 
         >>> class Store(EntityStore):

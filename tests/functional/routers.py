@@ -18,13 +18,13 @@ class BaseRouter(Router):
 
 
 class DocumentsRouter(BaseRouter):
-    namespace = "documents"
-    url_part = "documents"
+    namespace = u"documents"
+    url_part = u"documents"
 
 
 class EntitiesRouter(BaseRouter):
-    namespace = "entities"
-    url_part = "entities"
+    namespace = u"entities"
+    url_part = u"entities"
 
 
 base_router = BaseRouter()

@@ -1,11 +1,11 @@
-"""This module contains a route mixin, :class:`ViewMixin`, that
+u"""This module contains a route mixin, :class:`ViewMixin`, that
 implements :class:`django_crucrudile.routes.base.BaseRoute`.
 
 """
 
 
-class ViewMixin:
-    """Route mixin, implements
+class ViewMixin(object):
+    u"""Route mixin, implements
     :class:`django_crucrudile.routes.base.BaseRoute`, requires a
     view class to be set either on the class (:attr:`callback`
     attribute), or to be passed in :func:`__init__`.
@@ -53,13 +53,13 @@ class ViewMixin:
     """
 
     view_class = None
-    """
+    u"""
     :attribute view_class: View class that will be used to get the
                            callback to pass to the URL pattern
     :type view_class: subclass of :class:`django.views.generic.view`
     """
     auto_url_name_from_view = True
-    """
+    u"""
     :attribute auto_url_name_from_view: Automatically set route name using view
                                         class name (lower casing it, and
                                         stripping it of ``View``)
@@ -71,7 +71,7 @@ class ViewMixin:
                  auto_url_name_from_view=None,
                  *args,
                  **kwargs):
-        """Initialize ViewRoute, check that view_class is defined at
+        u"""Initialize ViewRoute, check that view_class is defined at
         class-level or passed as argument.
 
         :argument view_class: See :attr:`view_class`
@@ -92,22 +92,22 @@ class ViewMixin:
             self.auto_url_name_from_view = auto_url_name_from_view
         elif self.view_class is None:  # pragma: no cover
             raise ValueError(
-                "No ``view_class`` argument provided to __init__"
-                ", and no view_class defined as class attribute (in {})"
-                "".format(self)
+                u"No ``view_class`` argument provided to __init__"
+                u", and no view_class defined as class attribute (in {})"
+                u"".format(self)
             )
         if name is not None:
-            kwargs['name'] = name
+            kwargs[u'name'] = name
         elif self.auto_url_name_from_view:
             view_name = self.view_class.__name__
-            if view_name.endswith('View'):
+            if view_name.endswith(u'View'):
                 view_name = view_name[:-4]
             self.name = view_name.lower()
 
-        super().__init__(**kwargs)
+        super(self.__class__, self).__init__(**kwargs)
 
     def get_callback(self):
-        """Return callback using :func:`django.generic.views.View.as_view`,
+        u"""Return callback using :func:`django.generic.views.View.as_view`,
         getting arguments from :func:`get_view_kwargs`.
 
         Calls :func:`View.as_view` on view class, with kwargs from
@@ -133,7 +133,7 @@ class ViewMixin:
         )
 
     def get_view_kwargs(self):
-        """Return arguments to use when calling the callback builder.
+        u"""Return arguments to use when calling the callback builder.
 
         :returns: Keyword arguments
         :rtype: dict
@@ -142,7 +142,7 @@ class ViewMixin:
 
     @classmethod
     def make_for_view(cls, view_class, **kwargs):
-        """Return a subclass of this class, setting the ``view_class``
+        u"""Return a subclass of this class, setting the ``view_class``
         argument at class-level.
 
         Also sets the
@@ -172,11 +172,11 @@ class ViewMixin:
 
         """
         view_name = view_class.__name__
-        if view_name.endswith('View'):
+        if view_name.endswith(u'View'):
             view_name = view_name[:-4]
-        route_name = "{}Route".format(view_name)
+        route_name = u"{}Route".format(view_name)
 
-        kwargs['view_class'] = view_class
+        kwargs[u'view_class'] = view_class
 
         return type(
             route_name,

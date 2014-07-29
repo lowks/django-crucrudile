@@ -4,8 +4,8 @@ from django.views.generic.list import MultipleObjectMixin
 from django_crucrudile.routes import ModelViewRoute
 
 
-class ModelMixin:
-    """ModelRouter with no views. Give :attr:`model` kwarg where needed,
+class ModelMixin(object):
+    u"""ModelRouter with no views. Give :attr:`model` kwarg where needed,
     ask it in :func:`__init__`, and map ``SingleObjectMixin`` and
     ``MultipleObjectMixin`` to
     :class:`django_crucrudile.routes.ModelViewRoute` in register
@@ -15,7 +15,7 @@ class ModelMixin:
 
     """
     model = None
-    """
+    u"""
     :attribute model: Model used when building router URL name and URL
                       part, and passed to registered routes. Must be
                       defined at class-level or passed to
@@ -23,7 +23,7 @@ class ModelMixin:
     :type model: model
     """
     def __init__(self, model=None, url_part=None, **kwargs):
-        """Read model (from args or class-level value (:attr:`model`), fail if
+        u"""Read model (from args or class-level value (:attr:`model`), fail if
         none found.
 
         :argument model: see :attr:`model`
@@ -40,19 +40,19 @@ class ModelMixin:
             self.model = model
         elif self.model is None:  # pragma: no cover
             raise ValueError(
-                "No ``model`` argument provided to __init__"
-                ", and no model defined as class attribute (in {})"
-                "".format(self)
+                u"No ``model`` argument provided to __init__"
+                u", and no model defined as class attribute (in {})"
+                u"".format(self)
             )
         if url_part is not None:  # pragma: no cover
             self.url_part = url_part
         else:
             self.url_part = self.model_url_part
-        super().__init__(**kwargs)
+        super(self.__class__, self).__init__(**kwargs)
 
     @property
     def model_url_part(self):
-        """Return the model name to be used when building the URL part
+        u"""Return the model name to be used when building the URL part
 
         :returns: URL part from the Django model name
                   (``model._meta.model_name``)
@@ -71,7 +71,7 @@ class ModelMixin:
         return self.model._meta.model_name
 
     def get_register_map_kwargs(self):
-        """Add :attr:`model` as kwarg when applying register map
+        u"""Add :attr:`model` as kwarg when applying register map
 
         :returns: Keyword arguments to pass to mapping value, when
                   applying register map (from
@@ -84,12 +84,12 @@ class ModelMixin:
            :class:`django_crucrudile.routers.model.ModelRouter`
 
         """
-        kwargs = super().get_register_map_kwargs()
-        kwargs['model'] = self.model
+        kwargs = super(self.__class__, self).get_register_map_kwargs()
+        kwargs[u'model'] = self.model
         return kwargs
 
     def get_base_store_kwargs(self):
-        """Add :attr:`model` so that the route classes in the base store will
+        u"""Add :attr:`model` so that the route classes in the base store will
         get the model as a kwarg when being instantiated
 
         :returns: Keyword arguments to pass to mapping value, when
@@ -104,13 +104,13 @@ class ModelMixin:
            :class:`django_crucrudile.routers.model.ModelRouter`
 
         """
-        kwargs = super().get_base_store_kwargs()
-        kwargs['model'] = self.model
+        kwargs = super(self.__class__, self).get_base_store_kwargs()
+        kwargs[u'model'] = self.model
         return kwargs
 
     @classmethod
     def get_register_class_map(cls):
-        """Add :func:`django_crucrudile.routes.ModelViewRoute.make_for_view`
+        u"""Add :func:`django_crucrudile.routes.ModelViewRoute.make_for_view`
         mapping for ``SingleObjectMixin`` and ``MultipleObjectMixin``.
 
         This mapping allows registering Django generic views in the
@@ -144,7 +144,7 @@ class ModelMixin:
            :class:`django_crucrudile.routers.model.ModelRouter`
 
         """
-        mapping = super().get_register_class_map()
+        mapping = super(cls.__class__, cls).get_register_class_map()
         mapping[SingleObjectMixin, MultipleObjectMixin] = (
             ModelViewRoute.make_for_view
         )

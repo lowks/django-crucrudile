@@ -1,4 +1,4 @@
-"""This module contains the "main" abstract route class, that provides
+u"""This module contains the "main" abstract route class, that provides
 :func:`BaseRoute.patterns`, yielding patterns made from the route
 metadata and using the callback returned by implementations of the
 abstract function :func:`BaseRoute.get_callback`.
@@ -19,7 +19,7 @@ from django_crucrudile.urlutils import URLBuilder
 
 
 class BaseRoute(Entity):
-    """Abstract class for a :class:`django_crucrudile.entities.Entity`
+    u"""Abstract class for a :class:`django_crucrudile.entities.Entity`
     that URL patterns that point to its implementation of
     :func:`get_callback`. Implements
     :func:`django_crucrudile.entities.Entity.patterns` using
@@ -37,19 +37,19 @@ class BaseRoute(Entity):
 
     """
     name = None
-    """
+    u"""
     :attribute name: URL name to use for this pattern (will be used
                      for the Django URL pattern name)
     :type name: str
     """
     url_part = None
-    """
+    u"""
     :attribute url_part: URL regex to use for the pattern (will be
                          used in the URL regexp)
     :type url_part: str
     """
     auto_url_part = True
-    """
+    u"""
     :attribute auto_url_part: Automatically set :attr:`url_part` to
                               :attr:`name` if none defined.
     :type auto_url_part: bool
@@ -58,7 +58,7 @@ class BaseRoute(Entity):
     def __init__(self,
                  name=None, url_part=None,
                  **kwargs):
-        """Initialize Route, check that needed attributes/arguments are
+        u"""Initialize Route, check that needed attributes/arguments are
         defined.
 
         Also sets ``self.redirect`` to the URL name (using
@@ -98,9 +98,9 @@ class BaseRoute(Entity):
             self.name = name
         elif self.name is None:  # pragma: no cover
             raise ValueError(
-                "No ``name`` argument provided to __init__"
-                ", and no :attr:`name` defined as class attribute."
-                " (in {})".format(self)
+                u"No ``name`` argument provided to __init__"
+                u", and no :attr:`name` defined as class attribute."
+                u" (in {})".format(self)
             )
         if url_part is not None:
             self.url_part = url_part
@@ -109,18 +109,18 @@ class BaseRoute(Entity):
                 self.url_part = self.name
             else:
                 raise ValueError(  # pragma: no cover
-                    "No ``url_part`` argument provided to __init__"
-                    ", no :attr:`url_part` defined as class attribute."
-                    " (in {}), and :attr:`auto_url_part` is set to False."
-                    "".format(self)
+                    u"No ``url_part`` argument provided to __init__"
+                    u", no :attr:`url_part` defined as class attribute."
+                    u" (in {}), and :attr:`auto_url_part` is set to False."
+                    u"".format(self)
                 )
-        super().__init__(**kwargs)
+        super(self.__class__, self).__init__(**kwargs)
         self.redirect = self.get_url_name()
 
     def patterns(self, parents=None,
                  add_redirect=None,
                  add_redirect_silent=None):
-        """Yield patterns for URL regexs in :func:`get_url_regexs`, using
+        u"""Yield patterns for URL regexs in :func:`get_url_regexs`, using
         callback in :func:`get_callback` and URL name from
         :func:`get_url_name`.
 
@@ -163,7 +163,7 @@ class BaseRoute(Entity):
 
     @abstractmethod
     def get_callback(self):  # pragma: no cover
-        """Return callback to use in the URL pattern
+        u"""Return callback to use in the URL pattern
 
         .. warning::
 
@@ -178,7 +178,7 @@ class BaseRoute(Entity):
         pass
 
     def get_url_name(self):
-        """Get the main URL name, defined at class level (:attr:`name`) or
+        u"""Get the main URL name, defined at class level (:attr:`name`) or
         passed to :func:`__init__`.
 
         :returns: main URL name
@@ -196,7 +196,7 @@ class BaseRoute(Entity):
         return self.name
 
     def get_url_names(self):
-        """Get a list of URL names to generate patterns for. An least one URL
+        u"""Get a list of URL names to generate patterns for. An least one URL
         pattern will be returned for each URL name returned by this
         function.
 
@@ -217,7 +217,7 @@ class BaseRoute(Entity):
         yield self.get_url_name()
 
     def get_url_part(self):
-        """Get the main URL part, defined at class level (:attr:`url_part`) or
+        u"""Get the main URL part, defined at class level (:attr:`url_part`) or
         passed to :func:`__init__`.
 
         :returns: main URL part
@@ -235,7 +235,7 @@ class BaseRoute(Entity):
         return self.url_part
 
     def get_url_parts(self):
-        """Get a list of URL parts to generate patterns for. At least one URL
+        u"""Get a list of URL parts to generate patterns for. At least one URL
         pattern will be returned for each URL part returned by this
         function.
 
@@ -256,7 +256,7 @@ class BaseRoute(Entity):
         yield self.get_url_part()
 
     def get_url_specs(self):
-        """Yield URL specifications. An URL specification is a 3-tuple,
+        u"""Yield URL specifications. An URL specification is a 3-tuple,
         containing 3 :class:`django_crucrudile.urlutils.URLBuilder` instances :
         ``prefix``, ``name`` and ``suffix``. These objects are used to
         join together different part of the URLs. Using them in a
@@ -290,9 +290,9 @@ class BaseRoute(Entity):
         [([], ['url_part'], [])]
 
         """
-        prefix = URLBuilder(None, '/')
-        name = URLBuilder(None, '-')
-        suffix = URLBuilder(None, '/', '/?')
+        prefix = URLBuilder(None, u'/')
+        name = URLBuilder(None, u'-')
+        suffix = URLBuilder(None, u'/', u'/?')
 
         for part in self.get_url_parts():
             if part is not None:
@@ -300,7 +300,7 @@ class BaseRoute(Entity):
             yield prefix, name, suffix
 
     def get_url_regexs(self):
-        """Yield URL regexs to generate patterns for.
+        u"""Yield URL regexs to generate patterns for.
 
         For each URL specification in :func:`get_url_specs` :
 
@@ -346,4 +346,4 @@ class BaseRoute(Entity):
             )
             builder = URLBuilder([_prefix, _name, _suffix])
             required, built = builder()
-            yield '^{}$'.format(built)
+            yield u'^{}$'.format(built)

@@ -8,13 +8,8 @@ from django_crucrudile.entities.store import provides
 
 from . import ModelRouter
 
-@provides(ListView, map_kwargs={'index': True})
-@provides(DetailView)
-@provides(CreateView)
-@provides(UpdateView)
-@provides(DeleteView)
 class GenericModelRouter(ModelRouter):
-    """Generic model router, subclasses
+    u"""Generic model router, subclasses
 :class:`django_crucrudile.routers.model.ModelRouter` and use 5 Django
 generic views for each registered model.
 
@@ -62,3 +57,4 @@ generic views for each registered model.
          - testmodel-list @ ^list$ ListView
 
     """
+GenericModelRouter = provides(ListView, map_kwargs={u'index': True})(provides(DetailView)(provides(CreateView)(provides(UpdateView)(provides(DeleteView)(GenericModelRouter)))))

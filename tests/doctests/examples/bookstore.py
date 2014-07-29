@@ -1,4 +1,4 @@
-"""Bookstore example, with three simple models.
+u"""Bookstore example, with three simple models.
 
 >>> # these two lines are required to subclass Django model in doctests
 >>> import tests.unit

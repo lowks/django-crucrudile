@@ -1,15 +1,15 @@
-"""This module contains the :class:`ArgumentsMixin` route mixin, that
+u"""This module contains the :class:`ArgumentsMixin` route mixin, that
 uses :class:`parser.ArgumentsParser` to create a list of argument
 combinations from the given argument list."""
 
 
 from .parser import ArgumentsParser
 
-__all__ = ["ArgumentsMixin", "ArgumentsParser"]
+__all__ = [u"ArgumentsMixin", u"ArgumentsParser"]
 
 
-class ArgumentsMixin:
-    """Route mixin, that builds the argument combination list when
+class ArgumentsMixin(object):
+    u"""Route mixin, that builds the argument combination list when
     instantiating, and that yields (in :func:`get_url_specs`) another URL
     specification for each argument in resulting list.
 
@@ -27,7 +27,7 @@ class ArgumentsMixin:
 
     """
     arguments_spec = []
-    """
+    u"""
     :attribute arguments_spec: Argument list that will be passed to
                                :attr:`arguments_parser`. Should be
                                structured as the arguments parser
@@ -35,7 +35,7 @@ class ArgumentsMixin:
     :type arguments_spec: list
     """
     arguments_parser = ArgumentsParser
-    """
+    u"""
     :attribute arguments_parser: Argument parser to use to build the
                                  argument combinations from the
                                  argument specifications. Should be a
@@ -47,9 +47,10 @@ class ArgumentsMixin:
                             :class:`django_crucrudile.urlutils.Parsable`
     """
     def __init__(self, *args,
-                 arguments_spec=None,
                  **kwargs):
-        """Initialize route, set arguments specification if given, and run
+        if 'arguments_spec' in kwargs: arguments_spec = kwargs['arguments_spec']; del kwargs['arguments_spec']
+        else: arguments_spec = None
+        u"""Initialize route, set arguments specification if given, and run
         arguments parser.
 
         :argument arguments_spec: See :attr:`arguments_spec`
@@ -84,10 +85,10 @@ class ArgumentsMixin:
         parser = self.arguments_parser(self.arguments_spec)
         self.arguments = parser()
 
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def get_url_specs(self):
-        """Yield another URL specification for each argument in the argument
+        u"""Yield another URL specification for each argument in the argument
         combination list (arguments parser output).
 
         :returns: URL specifications
@@ -120,7 +121,7 @@ class ArgumentsMixin:
           [(True, '<arg1.2>/<arg2>')])]
 
         """
-        for prefix, name, suffix in super().get_url_specs():
+        for prefix, name, suffix in super(self.__class__, self).get_url_specs():
             if self.arguments:
                 for arg in self.arguments:
                     yield prefix, name, suffix + [arg]

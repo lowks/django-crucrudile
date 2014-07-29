@@ -1,11 +1,11 @@
-"""This module contains :class:`ModelMixin`, a route mixin that can be used
+u"""This module contains :class:`ModelMixin`, a route mixin that can be used
 to bind a model to a route, and use it when computing route metadata.
 
 """
 
 
-class ModelMixin:
-    """Route mixin that requires a model to be set either on the class
+class ModelMixin(object):
+    u"""Route mixin that requires a model to be set either on the class
     (:attr:`model` attribute), or to be passed in :func:`__init__`,
     and provides the URL name and URL part using the model metadata.
 
@@ -19,22 +19,24 @@ class ModelMixin:
 
     """
     model = None
-    """
+    u"""
     :attribute model: Model to use on the Route
     :type model: :class:`django.db.models.Model`
     """
     prefix_url_part = False
-    """
+    u"""
     :attribute prefix_url_part: Prefix the URL part with the model
                                 (ex: ``/model/<url_part>``)
     :type prefix_url_part: bool
     """
     def __init__(self,
                  *args,
-                 model=None,
-                 prefix_url_part=None,
                  **kwargs):
-        """Initialize ModelRoute, check that model is defined at class-level
+        if 'prefix_url_part' in kwargs: prefix_url_part = kwargs['prefix_url_part']; del kwargs['prefix_url_part']
+        else: prefix_url_part = None
+        if 'model' in kwargs: model = kwargs['model']; del kwargs['model']
+        else: model = None
+        u"""Initialize ModelRoute, check that model is defined at class-level
         or passed as argument.
 
         :argument model: See :attr:`model`
@@ -50,15 +52,15 @@ class ModelMixin:
             self.prefix_url_part = prefix_url_part
         elif self.model is None:  # pragma: no cover
             raise ValueError(
-                "No ``model`` argument provided to __init__"
-                ", and no model defined as class attribute (in {})"
-                "".format(self)
+                u"No ``model`` argument provided to __init__"
+                u", and no model defined as class attribute (in {})"
+                u"".format(self)
             )
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     @property
     def model_url_name(self):
-        """Return the model name to be used when building the URL name
+        u"""Return the model name to be used when building the URL name
 
         :returns: URL name from model name, using Django internals
         :rtype: str
@@ -82,7 +84,7 @@ class ModelMixin:
 
     @property
     def model_url_part(self):
-        """Return the model name to be used when building the URL part
+        u"""Return the model name to be used when building the URL part
 
         :returns: URL part from the URL name (:func:`model_url_name`)
         :rtype: str
@@ -101,7 +103,7 @@ class ModelMixin:
         return self.model._meta.model_name
 
     def get_url_specs(self):
-        """Return URL specs where the model URL name is appended to the prefix
+        u"""Return URL specs where the model URL name is appended to the prefix
         part list if needed
 
         :returns: URL specifications
@@ -144,14 +146,14 @@ class ModelMixin:
           [])]
 
         """
-        for prefix, name, suffix in super().get_url_specs():
+        for prefix, name, suffix in super(self.__class__, self).get_url_specs():
             if self.prefix_url_part:
                 yield prefix + [self.model_url_part], name, suffix
             else:
                 yield prefix, name, suffix
 
     def get_url_name(self):
-        """Return the URL name built :func:`model_url_name` and
+        u"""Return the URL name built :func:`model_url_name` and
         :attr:`Route.name`.
 
         :returns: compiled URL name
@@ -174,4 +176,4 @@ class ModelMixin:
         'testmodel-routename'
 
         """
-        return "{}-{}".format(self.model_url_name, self.name)
+        return u"{}-{}".format(self.model_url_name, self.name)

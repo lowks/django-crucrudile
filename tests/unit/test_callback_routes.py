@@ -6,15 +6,15 @@ import mock
 from django_crucrudile.routes import CallbackRoute
 
 
-class CallbackRouteTestCase:
+class CallbackRouteTestCase(object):
     route_class = CallbackRoute
     mock_callback = None
 
     def setUp(self):
         self.route_class = type(
-            'CallbackRoute',
+            u'CallbackRoute',
             (self.route_class, ),
-            {'name': "test name"}
+            {u'name': u"test name"}
         )
         self.mock_callback = mock.Mock()
         self.route = self.route_class(
@@ -35,9 +35,9 @@ class CallbackRouteTestCase:
         )
 
         _route_class = type(
-            'CallbackRoute',
+            u'CallbackRoute',
             (self.route_class, ),
-            {'callback': callback}
+            {u'callback': callback}
         )
 
         assert_equal(

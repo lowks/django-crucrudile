@@ -1,4 +1,4 @@
-"""An entity is an abstract class of objects that can be used to make
+u"""An entity is an abstract class of objects that can be used to make
 an URL pattern tree.
 
 .. seealso:: In ``django-crucrudile``, there are two classes that
@@ -11,8 +11,9 @@ an URL pattern tree.
 from abc import ABCMeta, abstractmethod
 
 
-class Entity(metaclass=ABCMeta):
-    """An entity is an abstract class of objects that can be used to make
+class Entity():
+    __metaclass__ = ABCMeta
+    u"""An entity is an abstract class of objects that can be used to make
 an URL pattern tree.
 
     Abstract class that defines an attribute
@@ -33,13 +34,13 @@ an URL pattern tree.
 
     """
     index = False
-    """
+    u"""
     :attribute index: Used when routed entity is registered, to know if
                       it should be registered as index.
     :type index: bool
     """
     def __init__(self, index=None):
-        """Initialize entity, allow setting :attr:`index` from arguments, and
+        u"""Initialize entity, allow setting :attr:`index` from arguments, and
         add ``redirect`` instance attribute
 
         :argument index: See :attr:`index`
@@ -52,7 +53,7 @@ an URL pattern tree.
     def patterns(self, parents=None,
                  add_redirect=None,
                  add_redirect_silent=None):  # pragma: no cover
-        """Yield URL patterns
+        u"""Yield URL patterns
 
         .. note::
 
@@ -70,8 +71,8 @@ an URL pattern tree.
         pass
 
     def get_str_tree(self, patterns_kwargs=None,
-                     indent_char=' ', indent_size=2):
-        """Return the representation of a entity patterns structure
+                     indent_char=u' ', indent_size=2):
+        u"""Return the representation of a entity patterns structure
 
         :argument patterns_kwargs: Keyword arguments to pass to
                                    :func:`patterns`
@@ -109,7 +110,7 @@ an URL pattern tree.
 
         """
         def _walk_tree(patterns, level=0):
-            """Walk the tree, yielding at tuple of form :
+            u"""Walk the tree, yielding at tuple of form :
 
             ``(level, namespace|router_class|model, callback)``
 
@@ -121,16 +122,16 @@ an URL pattern tree.
                     if pattern.callback else None
                 )
 
-                if hasattr(pattern, 'url_patterns'):
+                if hasattr(pattern, u'url_patterns'):
                     # Resolver
                     # Yield a line with the resolver metadata
-                    _model = getattr(pattern.router, 'model', None)
+                    _model = getattr(pattern.router, u'model', None)
                     yield (
                         level,
                         pattern.namespace or
-                        "{} {}".format(
-                            pattern.router.__class__.__name__ or '',
-                            _model._meta.model_name if _model else ''
+                        u"{} {}".format(
+                            pattern.router.__class__.__name__ or u'',
+                            _model._meta.model_name if _model else u''
                         ),
                         pattern.regex.pattern,
                         callback
@@ -151,13 +152,13 @@ an URL pattern tree.
                     )
 
         def _str_tree(lines):
-            """Iterate over the tuple returned by _walk_tree, formatting it."""
+            u"""Iterate over the tuple returned by _walk_tree, formatting it."""
             for _level, _name, _pattern, _callback in lines:
-                yield "{} - {} @ {} {}".format(
+                yield u"{} - {} @ {} {}".format(
                     indent_char*indent_size*_level,
-                    _name or '',
-                    _pattern or '',
-                    _callback or '',
+                    _name or u'',
+                    _pattern or u'',
+                    _callback or u'',
                 )
 
         patterns_kwargs = patterns_kwargs or {}
@@ -165,6 +166,6 @@ an URL pattern tree.
         pattern_tuples = _walk_tree(patterns)
         pattern_lines = _str_tree(pattern_tuples)
 
-        return '\n'.join(
+        return u'\n'.join(
             pattern_lines
         )

@@ -22,31 +22,31 @@ from .models import (
 
 
 MODEL_NAME_DICT = {
-    'documents': (DocumentModel,
+    u'documents': (DocumentModel,
                   GroupModel,
                   PhaseModel),
-    'entities': (EntityModel,
+    u'entities': (EntityModel,
                  InterfaceModel),
     None: (CommentModel,
            TaskModel)
 }
 
 ACTION_NAME_DICT = {
-    'list': ListView,
-    'detail': DetailView,
-    'create': CreateView,
-    'update': UpdateView,
-    'delete': DeleteView,
+    u'list': ListView,
+    u'detail': DetailView,
+    u'create': CreateView,
+    u'update': UpdateView,
+    u'delete': DeleteView,
 }
 
 
-class ResolveTestCase:
+class ResolveTestCase(object):
     router = base_router
 
     def setUp(self):
         self.patterns = list(self.router.patterns())
         self.url = url(
-            '^/',
+            u'^/',
             include(self.patterns),
         )
 
@@ -54,9 +54,9 @@ class ResolveTestCase:
                          model_name, action_name, view_name,
                          prefix):
         if prefix:
-            path = "/{}/{}/{}".format(prefix, model_name, action_name)
+            path = u"/{}/{}/{}".format(prefix, model_name, action_name)
         else:
-            path = "/{}/{}".format(model_name, action_name)
+            path = u"/{}/{}".format(model_name, action_name)
 
         match = self.url.resolve(
             path
@@ -69,12 +69,12 @@ class ResolveTestCase:
 
         assert_equal(
             match.url_name,
-            "{}-{}".format(model_name, action_name)
+            u"{}-{}".format(model_name, action_name)
         )
 
         assert_equal(
             match.namespace,
-            (prefix or '')
+            (prefix or u'')
         )
 
     def test_model_views(self):
